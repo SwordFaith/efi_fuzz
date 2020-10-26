@@ -114,6 +114,11 @@ def main(target_binary, nvram_file, var_name, input_file, output, end, timeout, 
     # We want AFL's forkserver to spawn new copies starting from the main module's entrypoint.
     ql.hook_address(callback=start_afl, address=entry_point, user_data=(input_file, var_name, sanitize))
 
+    # import ipdb; ipdb.set_trace()
+    import qiling
+    ql.hook_address(callback=qiling.os.uefi.smm_sw_dispatch2_protocol.trigger_swsmi,
+                     address=0x108b0, user_data={'rsi': 0x10a9b+1})
+
     if sanitize:
         enable_sanitized_heap(ql)
         enable_sanitized_CopyMem(ql)
